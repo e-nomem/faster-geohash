@@ -1,0 +1,40 @@
+[package]
+name = "fast-geohash"
+version = "0.0.1"
+authors = ["Eashwar Ranganathan <eashwar@eashwar.com>"]
+edition = "2024"
+rust-version = "1.85"
+
+readme = "README.md"
+license = "MIT"
+
+# This rust code only exists to bind with python
+# It should not be published as a crate
+publish = false
+
+[dependencies]
+geohash = "0.13.1"
+pyo3 = "0.27"
+
+[features]
+# The extension-modules feature is required to build wheels, but is terrible for
+# local dev, so make it an optional feature that we enable only when building with maturin.
+wheel = ["pyo3/extension-module"]
+
+# This feature allows for building abi3 compatible wheels, but is not enabled by default
+# here or in the maturin config. Enable it explicitly when building the wheel, e.g.
+# `uv build -C maturin.build-args=--features=abi3 --wheel .`
+# Keep the `pyo3/abi3-{lower_bound}` feature here in sync with project.requires-python in the pyproject.toml
+abi3 = [
+	"wheel",
+	"pyo3/abi3",
+	"pyo3/abi3-py39",
+]
+
+[build-dependencies]
+pyo3-build-config = { version = "0.27.1", features = ["resolve-config"] }
+
+[lib]
+name = "fast_geohash"
+crate-type = ["cdylib"]
+path = "src/lib.rs"

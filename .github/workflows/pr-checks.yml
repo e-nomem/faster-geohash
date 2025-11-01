@@ -1,0 +1,40 @@
+name: PR Checks
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+concurrency:
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-rust:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # SHA pinned at v5.0.0
+      - uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c  # SHA pinned at v1.15.2
+        with:
+          toolchain: stable
+          components: "clippy,rustfmt"
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@559aa3035a47390ba96088dffa783b5d26da9326  # SHA pinned at v1.1.1
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+  lint-python:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # SHA pinned at v5.0.0
+      - uses: astral-sh/ruff-action@57714a7c8a2e59f32539362ba31877a1957dded1  # SHA pinned at v3.5.1
+        with:
+          version-file: pyproject.toml
+          args: "--version"
+      - run: ruff check --diff
+      - run: ruff format --check --output-format=github

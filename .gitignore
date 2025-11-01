@@ -1,0 +1,13 @@
+# Python Stuff
+*.py[cod]
+__pycache__/
+*.egg-info/
+*.so
+/dist/
+/.pytest_cache/
+/.ruff_cache/
+/.benchmarks/
+/.venv/
+
+# Rust stuff
+/target/
