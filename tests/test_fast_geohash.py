@@ -46,3 +46,11 @@ def test_decode_exact() -> None:
 
 def test_decode() -> None:
 	assert fast_geohash.decode('ww8p1r4t8') == ('112.5584', '37.8324')
+
+
+def test_round_trip() -> None:
+	coord = (112, 37)
+	geohash = fast_geohash.encode(coord, precision=12)
+	decoded = fast_geohash.decode(geohash)
+
+	assert decoded == tuple(str(v) for v in coord)
