@@ -44,9 +44,12 @@ dev = [
     "maturin~=1.9",
     # See the docs on how to install this into your venv
     "maturin-import-hook~=0.3.0",
-    "pytest>=8.4.2",
     "ruff~=0.14.2",
     "ty==0.0.1a25",
+    {include-group = "test"},
+]
+test = [
+    "pytest>=8.4.2",
 ]
 
 [tool.ruff]
@@ -83,3 +86,26 @@ docstring-code-format = true
 [tool.ty.terminal]
 # Error if ty emits any warning-level diagnostics.
 error-on-warning = true
+
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+
+test-groups = ["test"]
+test-sources = ["tests"]
+test-command = "pytest ./tests"
+
+[tool.cibuildwheel.config-settings]
+"maturin.build-args" = "--features=abi3"
+
+[tool.cibuildwheel.linux]
+repair-wheel-command = [
+  "auditwheel repair -w {dest_dir} {wheel}",
+  "pipx run abi3audit --strict --report {wheel}",
+]
+[tool.cibuildwheel.macos]
+repair-wheel-command = [
+  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}",
+  "pipx run abi3audit --strict --report {wheel}",
+]
