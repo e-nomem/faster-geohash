@@ -16,6 +16,7 @@ concurrency:
 jobs:
   lint-rust:
     if: github.event.pull_request.draft == false
+    name: Lint / Rust
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # SHA pinned at v5.0.0
@@ -29,12 +30,51 @@ jobs:
         run: cargo clippy --all-targets --all-features -- -D warnings
   lint-python:
     if: github.event.pull_request.draft == false
+    name: Lint / Python
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # SHA pinned at v5.0.0
-      - uses: astral-sh/ruff-action@57714a7c8a2e59f32539362ba31877a1957dded1  # SHA pinned at v3.5.1
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41 # SHA pinned at v7.1.2
+      - run: uv sync --locked
+      - run: uv run --frozen ruff check --diff
+      - run: uv run --frozen ruff format --diff
+  lint-green:
+    if: always()
+    needs:
+      - lint-rust
+      - lint-python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe  # SHA pinned at v1.2.2
         with:
-          version-file: pyproject.toml
-          args: "--version"
-      - run: ruff check --diff
-      - run: ruff format --check --output-format=github
+          jobs: ${{ toJSON(needs) }}
+  tests:
+    if: github.event.pull_request.draft == false
+    needs: [lint-python]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            os-name: Ubuntu
+          - os: macos-latest
+            os-name: MacOS
+    name: Tests / ${{ matrix.os-name }} / ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # SHA pinned at v5.0.0
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41 # SHA pinned at v7.1.2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --locked
+      - run: uv run --frozen pytest tests
+  tests-green:
+    if: always()
+    needs: [tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe  # SHA pinned at v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}

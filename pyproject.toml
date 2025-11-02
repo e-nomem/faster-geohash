@@ -46,7 +46,7 @@ dev = [
     "maturin-import-hook~=0.3.0",
     "pytest>=8.4.2",
     "ruff~=0.14.2",
-    "ty==0.0.1a24",
+    "ty==0.0.1a25",
 ]
 
 [tool.ruff]
