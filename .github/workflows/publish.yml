@@ -1,0 +1,71 @@
+name: Publish
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  sdist:
+    name: Build / Sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # SHA pinned at v5.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # SHA pinned at v7.1.2
+      - run: uv build --sdist .
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # SHA pinned at v5.0.0
+        with:
+          name: build-sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          compression-level: 0  # The tarball is already compressed
+  wheels:
+    strategy:
+      fail-fast: false
+      matrix:
+        # We only build abi3 wheels here, so just pick the minimum python version
+        include:
+          - {python: "cp39", platform: "manylinux_x86_64", os: "ubuntu-24.04"}
+          # - {python: "cp39", platform: "manylinux_aarch64", os: "ubuntu-24.04-arm"}  # Not available for private repos TODO: re-enable when public
+          - {python: "cp39", platform: "macosx_x86_64", os: "macos-15-intel"}
+          - {python: "cp39", platform: "macosx_arm64", os: "macos-15"}
+    name: Build / Wheel / ${{ matrix.python }}-${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # SHA pinned at v5.0.0
+        with:
+          persist-credentials: false
+      - name: Fix MACOS_DEPLOYMENT_TARGET for x86_64 builds
+        if: ${{ matrix.platform }} == "macosx_x86_64"
+        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> $GITHUB_ENV
+      - uses: pypa/cibuildwheel@c53e541c2de29c8bb0a8f6e3ff13d96046e8000c  # SHA pinned at floating revision TODO: pin to next release
+        with:
+          extras: "uv"
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # SHA pinned at v5.0.0
+        with:
+          name: build-wheel-${{ matrix.python }}-${{ matrix.platform }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+  publish-pypi:
+    name: Publish to PyPI
+    if: github.repository == 'e-nomem/fast-geohash' && false  # TODO: Re-enable this when we are actually ready to publish
+    needs: [sdist, wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: PyPI
+      url: https://pypi.org/project/fast-geohash/${{ github.ref_name }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # SHA pinned at v6.0.0
+        with:
+          pattern: build-*
+          path: dist
+          merge-multiple: true
+      # TODO: Re-enable this when we are actually ready to publish
+      # - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # SHA pinned at v1.13.0
+      #   with:
+      #     packages-dir: dist
+      #     verify-metadata: true
