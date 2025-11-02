@@ -89,6 +89,12 @@ test-command = "pytest ./tests"
 [tool.cibuildwheel.config-settings]
 "maturin.build-args" = "--features=abi3"
 
+[[tool.cibuildwheel.overrides]]
+# Free-threaded python is not currently ABI3 compatible
+# See PEP 803
+select = "cp314t-*"
+config-settings."maturin.build-args" = ""
+
 [tool.cibuildwheel.linux]
 repair-wheel-command = [
   "auditwheel repair -w {dest_dir} {wheel}",
