@@ -15,6 +15,7 @@ mod fast_geohash {
 
     use super::FastGeohashError;
     use super::error_to_precision;
+    use super::format_to_precision;
 
     type CoordTuple = (f64, f64);
 
@@ -67,8 +68,8 @@ mod fast_geohash {
             let lng_precision = error_to_precision(lng_err);
             let lat_precision = error_to_precision(lat_err);
 
-            let lng = format!("{:.*}", lng_precision as usize, coord.x);
-            let lat = format!("{:.*}", lat_precision as usize, coord.y);
+            let lng = format_to_precision(coord.x, lng_precision as usize);
+            let lat = format_to_precision(coord.y, lat_precision as usize);
 
             Ok((lng, lat))
         })
@@ -79,6 +80,11 @@ fn error_to_precision(error: f64) -> i64 {
     let v = error.log10();
     let v = (-v).round();
     cmp::max(v as i64, 1) - 1
+}
+
+fn format_to_precision(value: f64, precision: usize) -> String {
+    let v = format!("{:.*}", precision, value);
+    v.trim_end_matches("0").trim_end_matches(".").into()
 }
 
 #[derive(Debug)]

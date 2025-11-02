@@ -37,6 +37,10 @@ dynamic = [
     "version",
 ]
 
+[project.urls]
+homepage = "https://github.com/e-nomem/fast-geohash"
+changelog = "https://github.com/e-nomem/fast-geohash/blob/main/CHANGELOG.md"
+
 [dependency-groups]
 dev = [
     # Keep this in sync with build-system.requires above
