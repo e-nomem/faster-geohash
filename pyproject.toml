@@ -10,12 +10,10 @@ build-backend = "maturin"
 name = "fast-geohash"
 license = "MIT"
 license-files = ["LICENSE"]
-readme = "README.md"
 requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 feature in the Cargo.toml
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
 ]
-keywords = ["geohash", "GIS"]
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
@@ -34,6 +32,9 @@ classifiers = [
 ]
 
 dynamic = [
+    "description",
+    "keywords",
+    "readme",
     "version",
 ]
 

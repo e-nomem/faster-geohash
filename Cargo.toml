@@ -5,8 +5,10 @@ authors = ["Eashwar Ranganathan <eashwar@eashwar.com>"]
 edition = "2024"
 rust-version = "1.85"
 
+description = "A fast geohashing library"
 readme = "README.md"
 license = "MIT"
+keywords = ["geohash", "gis"]
 
 # This rust code only exists to bind with python
 # It should not be published as a crate
