@@ -11,15 +11,16 @@ jobs:
       artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
       artifact-filename: ${{ steps.set-artifact-filename.outputs.artifact-filename }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # SHA pinned at v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # SHA pinned at v7.1.2
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # v7.1.2
       - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> "$GITHUB_ENV"
       - run: uv build --sdist .
+      - run: uv tool run twine check --strict dist/*
       - run: echo "artifact-filename=$(find dist -name '*.tar.gz' -printf '%f')" >> "$GITHUB_OUTPUT"
         id: set-artifact-filename
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # SHA pinned at v5.0.0
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # v5.0.0
         id: upload-artifact
         with:
           name: build-sdist
@@ -40,19 +41,25 @@ jobs:
     needs: [sdist]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # SHA pinned at v6.0.0
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
           artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
-      - name: Fix MACOS_DEPLOYMENT_TARGET for x86_64 builds
+      - name: Set MACOS_DEPLOYMENT_TARGET for x86_64 builds
         if: ${{ matrix.platform }} == "macosx_x86_64"
-        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> $GITHUB_ENV
+        # 10.12 is the minimum target for the rust compiler
+        # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
+        # See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
+        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
+      - name: Set MACOS_DEPLOYMENT_TARGET for aarch64 builds
+        if: ${{ matrix.platform }} == "macosx_arm64"
+        run: echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> "$GITHUB_ENV"
       - uses: pypa/cibuildwheel@c53e541c2de29c8bb0a8f6e3ff13d96046e8000c  # SHA pinned at floating revision TODO: pin to next release
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
         with:
           extras: "uv"
           package-dir: ${{ needs.sdist.outputs.artifact-filename }}
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # SHA pinned at v5.0.0
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4  # v5.0.0
         with:
           name: build-wheel-${{ matrix.python }}-${{ matrix.platform }}
           path: wheelhouse/*.whl
@@ -68,13 +75,13 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # SHA pinned at v6.0.0
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
           pattern: build-*
           path: dist
           merge-multiple: true
       # TODO: Re-enable this when we are actually ready to publish
-      # - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # SHA pinned at v1.13.0
+      # - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
       #   with:
       #     packages-dir: dist
       #     verify-metadata: true
