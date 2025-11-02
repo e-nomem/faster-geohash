@@ -19,15 +19,15 @@ jobs:
     name: Lint / Rust
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # SHA pinned at v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c  # SHA pinned at v1.15.2
+      - uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c  # v1.15.2
         with:
           toolchain: stable
           components: "clippy,rustfmt"
       - name: Rustfmt Check
-        uses: actions-rust-lang/rustfmt@559aa3035a47390ba96088dffa783b5d26da9326  # SHA pinned at v1.1.1
+        uses: actions-rust-lang/rustfmt@559aa3035a47390ba96088dffa783b5d26da9326  # v1.1.1
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
   lint-python:
@@ -35,13 +35,14 @@ jobs:
     name: Lint / Python
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # SHA pinned at v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # SHA pinned at v7.1.2
-      - run: uv sync --locked
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # v7.1.2
+      - run: uv sync --locked --no-default-groups --group lint
       - run: uv run --frozen ruff check --diff
       - run: uv run --frozen ruff format --diff
+      - run: uv run --frozen ty check
   lint-green:
     if: always()
     needs:
@@ -49,7 +50,7 @@ jobs:
       - lint-python
     runs-on: ubuntu-latest
     steps:
-      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe  # SHA pinned at v1.2.2
+      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe  # v1.2.2
         with:
           jobs: ${{ toJSON(needs) }}
   tests:
@@ -68,19 +69,19 @@ jobs:
     name: Tests / ${{ matrix.os-name }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # SHA pinned at v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # SHA pinned at v7.1.2
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # v7.1.2
         with:
           python-version: ${{ matrix.python-version }}
-      - run: uv sync --locked
+      - run: uv sync --locked --no-default-groups --group test
       - run: uv run --frozen pytest tests
   tests-green:
     if: always()
     needs: [tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe  # SHA pinned at v1.2.2
+      - uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe  # v1.2.2
         with:
           jobs: ${{ toJSON(needs) }}

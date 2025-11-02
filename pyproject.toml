@@ -15,17 +15,20 @@ requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 fea
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
 ]
+keywords = ["geohash", "GIS"]
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Free Threading :: 2 - Beta",
     "Programming Language :: Rust",
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
 ]
@@ -34,23 +37,67 @@ dynamic = [
     "version",
 ]
 
-[tool.maturin]
-features = ["wheel"]
-locked = true
-
 [dependency-groups]
 dev = [
     # Keep this in sync with build-system.requires above
     "maturin~=1.9",
     # See the docs on how to install this into your venv
     "maturin-import-hook~=0.3.0",
+    {include-group = "lint"},
+    {include-group = "test"},
+]
+lint = [
     "ruff~=0.14.2",
     "ty==0.0.1a25",
-    {include-group = "test"},
 ]
 test = [
     "pytest>=8.4.2",
 ]
+
+
+[tool.maturin]
+features = ["wheel"]
+locked = true
+exclude = [
+    ".github/**/*",
+    ".gitignore",
+]
+
+[tool.maturin.target.x86_64-apple-darwin]
+# 10.12 is the minimum target for the rust compiler
+# Note that cibuildwheel has a lower target that is overridden in the publish workflow
+# See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
+macos-deployment-target = "10.12"
+
+[tool.maturin.target.aarch64-apple-darwin]
+# 11.0 is the minimum target used by cibuildwheel for aarch64 macOS
+macos-deployment-target = "11.0"
+
+
+[tool.cibuildwheel]
+build-frontend = "build[uv]"
+
+test-groups = ["test"]
+test-sources = ["tests"]
+test-command = "pytest ./tests"
+
+[tool.cibuildwheel.config-settings]
+"maturin.build-args" = "--features=abi3"
+
+[tool.cibuildwheel.linux]
+repair-wheel-command = [
+  "auditwheel repair -w {dest_dir} {wheel}",
+  "uv tool run abi3audit --strict --report {wheel}",
+  "uv tool run twine check --strict {wheel}",
+]
+
+[tool.cibuildwheel.macos]
+repair-wheel-command = [
+  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}",
+  "uv tool run abi3audit --strict --report {wheel}",
+  "uv tool run twine check --strict {wheel}",
+]
+
 
 [tool.ruff]
 line-length = 120
@@ -86,26 +133,3 @@ docstring-code-format = true
 [tool.ty.terminal]
 # Error if ty emits any warning-level diagnostics.
 error-on-warning = true
-
-[tool.cibuildwheel]
-build-frontend = "build[uv]"
-manylinux-x86_64-image = "manylinux_2_28"
-manylinux-aarch64-image = "manylinux_2_28"
-
-test-groups = ["test"]
-test-sources = ["tests"]
-test-command = "pytest ./tests"
-
-[tool.cibuildwheel.config-settings]
-"maturin.build-args" = "--features=abi3"
-
-[tool.cibuildwheel.linux]
-repair-wheel-command = [
-  "auditwheel repair -w {dest_dir} {wheel}",
-  "pipx run abi3audit --strict --report {wheel}",
-]
-[tool.cibuildwheel.macos]
-repair-wheel-command = [
-  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}",
-  "pipx run abi3audit --strict --report {wheel}",
-]

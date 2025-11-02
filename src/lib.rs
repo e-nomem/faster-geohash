@@ -1,3 +1,4 @@
+use std::cmp;
 use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Error as FmtError;
@@ -9,12 +10,11 @@ use pyo3::prelude::*;
 
 #[pymodule(gil_used = false)]
 mod fast_geohash {
-    use std::cmp;
-
     use geohash::Coord;
     use pyo3::prelude::*;
 
     use super::FastGeohashError;
+    use super::error_to_precision;
 
     type CoordTuple = (f64, f64);
 
@@ -64,8 +64,8 @@ mod fast_geohash {
         py.detach(move || {
             let (coord, lng_err, lat_err) = geohash::decode(hash_str)?;
 
-            let lng_precision = cmp::max((-(lng_err.log10())).round() as i64, 1) - 1;
-            let lat_precision = cmp::max((-(lat_err.log10())).round() as i64, 1) - 1;
+            let lng_precision = error_to_precision(lng_err);
+            let lat_precision = error_to_precision(lat_err);
 
             let lng = format!("{:.*}", lng_precision as usize, coord.x);
             let lat = format!("{:.*}", lat_precision as usize, coord.y);
@@ -73,6 +73,12 @@ mod fast_geohash {
             Ok((lng, lat))
         })
     }
+}
+
+fn error_to_precision(error: f64) -> i64 {
+    let v = error.log10();
+    let v = (-v).round();
+    cmp::max(v as i64, 1) - 1
 }
 
 #[derive(Debug)]
