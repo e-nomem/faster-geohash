@@ -10,12 +10,10 @@ build-backend = "maturin"
 name = "fast-geohash"
 license = "MIT"
 license-files = ["LICENSE"]
-readme = "README.md"
 requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 feature in the Cargo.toml
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
 ]
-keywords = ["geohash", "GIS"]
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
@@ -34,6 +32,9 @@ classifiers = [
 ]
 
 dynamic = [
+    "description",
+    "keywords",
+    "readme",
     "version",
 ]
 
@@ -85,21 +86,22 @@ test-groups = ["test"]
 test-sources = ["tests"]
 test-command = "pytest ./tests"
 
-[tool.cibuildwheel.config-settings]
-"maturin.build-args" = "--features=abi3"
-
-[tool.cibuildwheel.linux]
+[[tool.cibuildwheel.overrides]]
+# For all builds, use this opportunity to run twine check to verify the metadata
+select = "*"
+inherit.repair-wheel-command = "append"
 repair-wheel-command = [
-  "auditwheel repair -w {dest_dir} {wheel}",
-  "uv tool run abi3audit --strict --report {wheel}",
-  "uv tool run twine check --strict {wheel}",
+    "uv tool run twine check --strict {wheel}",
 ]
 
-[tool.cibuildwheel.macos]
+[[tool.cibuildwheel.overrides]]
+# Free-threaded python is not currently ABI3 compatible (See PEP 803)
+# So we only add these options for non-free-threaded python to build api3
+select = "cp39-*"
+config-settings."maturin.build-args" = "--features=abi3"
+inherit.repair-wheel-command = "append"
 repair-wheel-command = [
-  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}",
   "uv tool run abi3audit --strict --report {wheel}",
-  "uv tool run twine check --strict {wheel}",
 ]
 
 

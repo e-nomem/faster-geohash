@@ -32,11 +32,17 @@ jobs:
       fail-fast: false
       matrix:
         # We only build abi3 wheels here, so just pick the minimum python version
+        python: ["cp39", "cp314t"]
+        platform:
+          - manylinux_x86_64
+          # - manylinux_aarch64
+          - macosx_x86_64
+          - macosx_arm64
         include:
-          - {python: "cp39", platform: "manylinux_x86_64", os: "ubuntu-24.04"}
-          # - {python: "cp39", platform: "manylinux_aarch64", os: "ubuntu-24.04-arm"}  # Not available for private repos TODO: re-enable when public
-          - {python: "cp39", platform: "macosx_x86_64", os: "macos-15-intel"}
-          - {python: "cp39", platform: "macosx_arm64", os: "macos-15"}
+          - {platform: "manylinux_x86_64", os: "ubuntu-24.04"}
+          # - {platform: "manylinux_aarch64", os: "ubuntu-24.04-arm"}  # Not available for private repos TODO: re-enable when public
+          - {platform: "macosx_x86_64", os: "macos-15-intel"}
+          - {platform: "macosx_arm64", os: "macos-15"}
     name: Build / Wheel / ${{ matrix.python }}-${{ matrix.platform }}
     needs: [sdist]
     runs-on: ${{ matrix.os }}
