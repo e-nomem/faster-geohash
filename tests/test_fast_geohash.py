@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 import pytest
 
 import fast_geohash
