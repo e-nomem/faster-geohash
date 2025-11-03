@@ -28,8 +28,8 @@ mod fast_geohash {
     ) -> Result<String, FastGeohashError> {
         py.detach(move || {
             let c = Coord {
-                x: coords.0,
-                y: coords.1,
+                x: coords.1,
+                y: coords.0,
             };
             let result = geohash::encode(c, precision)?;
             Ok(result)
@@ -43,8 +43,8 @@ mod fast_geohash {
     ) -> Result<(CoordTuple, CoordTuple), FastGeohashError> {
         py.detach(move || {
             let bbox = geohash::decode_bbox(hash_str)?;
-            let min = (bbox.min().x, bbox.min().y);
-            let max = (bbox.max().x, bbox.max().y);
+            let min = (bbox.min().y, bbox.min().x);
+            let max = (bbox.max().y, bbox.max().x);
             Ok((min, max))
         })
     }
@@ -56,7 +56,7 @@ mod fast_geohash {
     ) -> Result<(CoordTuple, f64, f64), FastGeohashError> {
         py.detach(move || {
             let (Coord { x, y }, lng_err, lat_err) = geohash::decode(hash_str)?;
-            Ok(((x, y), lng_err, lat_err))
+            Ok(((y, x), lat_err, lng_err))
         })
     }
 
@@ -71,7 +71,7 @@ mod fast_geohash {
             let lng = format_to_precision(coord.x, lng_precision as usize);
             let lat = format_to_precision(coord.y, lat_precision as usize);
 
-            Ok((lng, lat))
+            Ok((lat, lng))
         })
     }
 }
@@ -111,7 +111,18 @@ impl Error for FastGeohashError {
 impl From<FastGeohashError> for PyErr {
     fn from(value: FastGeohashError) -> Self {
         match value {
-            FastGeohashError::InternalGeohashError(e) => PyValueError::new_err(format!("{e}")),
+            FastGeohashError::InternalGeohashError(e) => match e {
+                GeohashError::InvalidCoordinateRange(c) => {
+                    // Special case for this error because we expect everything in
+                    // lat, lng order, but the coords are in the opposite x, y order
+                    // So we reformat the error here to avoid confusion
+                    PyValueError::new_err(format!(
+                        "invalid coordinate range: COORD(lat={}, lng={})",
+                        c.y, c.x
+                    ))
+                }
+                e => PyValueError::new_err(format!("{e}")),
+            },
         }
     }
 }
