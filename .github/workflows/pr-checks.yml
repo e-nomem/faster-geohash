@@ -8,11 +8,6 @@ on:
       - synchronize
       - reopened
       - ready_for_review
-    paths-ignore:
-      - CHANGELOG.md
-      - README.md
-      - LICENSE
-      - .github/workflows/publish.yml
 permissions: {}
 
 concurrency:
