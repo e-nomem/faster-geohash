@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 use std::cmp;
 use std::error::Error;
 use std::fmt::Display;
