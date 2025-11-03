@@ -21,7 +21,7 @@ This library uses `maturin` to compile the rust code into a python extension mod
 uv build --wheel .
 
 # Build directly from sdist
-uv build --wheel path/to/faster_geohash-0.0.1.tar.gz
+uv build --wheel path/to/faster_geohash-0.1.0.tar.gz
 ```
 
 ### ABI3 Support
