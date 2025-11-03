@@ -5,3 +5,4 @@ Unreleased
  - Add tests and build for free-threaded cp314t target with abi3 disabled ([#8](https://github.com/e-nomem/fast-geohash/pulls/8) by [@e-nomem](https://github.com/e-nomem))
  - Switch coordinate ordering from (x, y) to (latitude, longitude) everywhere ([#9](https://github.com/e-nomem/fast-geohash/pulls/9) by [@e-nomem](https://github.com/e-nomem))
  - Add SPDX license identifiers to source files ([#10](https://github.com/e-nomem/fast-geohash/pulls/10) by [@e-nomem](https://github.com/e-nomem))
+ - Restrict Github actions permissions for workflows ([#11](https://github.com/e-nomem/fast-geohash/pulls/11), [#12](https://github.com/e-nomem/fast-geohash/pulls/12) by [@e-nomem](https://github.com/e-nomem))

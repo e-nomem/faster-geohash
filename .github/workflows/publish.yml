@@ -2,20 +2,28 @@ name: Publish
 on:
   push:
     tags: ["*"]
+permissions: {}
 
 jobs:
   sdist:
     name: Build / Sdist
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Required to check out the repo
     outputs:
       artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
       artifact-filename: ${{ steps.set-artifact-filename.outputs.artifact-filename }}
+      source-date-epoch: ${{ steps.set-source-date-epoch.outputs.source-date-epoch }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # v7.1.2
-      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> "$GITHUB_ENV"
+      - run: |-
+          SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
+          echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> "$GITHUB_ENV"
+          echo "source-date-epoch=$SOURCE_DATE_EPOCH" >> "$GITHUB_OUTPUT"
+        id: set-source-date-epoch
       - run: uv build --sdist .
       - run: uv tool run twine check --strict dist/*
       - run: echo "artifact-filename=$(find dist -name '*.tar.gz' -printf '%f')" >> "$GITHUB_OUTPUT"
@@ -46,19 +54,27 @@ jobs:
     name: Build / Wheel / ${{ matrix.python }}-${{ matrix.platform }}
     needs: [sdist]
     runs-on: ${{ matrix.os }}
+    permissions: {}
+    env:
+      SOURCE_DATE_EPOCH: ${{ needs.sdist.outputs.source-date-epoch }}
     steps:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
           artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
-      - name: Set MACOS_DEPLOYMENT_TARGET for x86_64 builds
-        if: ${{ matrix.platform }} == "macosx_x86_64"
+      - name: Set MACOS_DEPLOYMENT_TARGET if needed
         # 10.12 is the minimum target for the rust compiler
         # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
+        # 11.0 is the default used for aarch64
         # See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
-        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
-      - name: Set MACOS_DEPLOYMENT_TARGET for aarch64 builds
-        if: ${{ matrix.platform }} == "macosx_arm64"
-        run: echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> "$GITHUB_ENV"
+        shell: bash
+        run: |-
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            if [[ "$(uname -m)" == "x86_64" ]]; then
+              echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
+            else
+              echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> "$GITHUB_ENV"
+            fi
+          fi
       - uses: pypa/cibuildwheel@c53e541c2de29c8bb0a8f6e3ff13d96046e8000c  # SHA pinned at floating revision TODO: pin to next release
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
@@ -75,11 +91,11 @@ jobs:
     if: github.repository == 'e-nomem/fast-geohash' && false  # TODO: Re-enable this when we are actually ready to publish
     needs: [sdist, wheels]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for token exchange/trusted publishing
     environment:
       name: PyPI
       url: https://pypi.org/project/fast-geohash/${{ github.ref_name }}
-    permissions:
-      id-token: write
     steps:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
