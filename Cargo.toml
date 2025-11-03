@@ -1,6 +1,6 @@
 [package]
 name = "faster-geohash"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Eashwar Ranganathan <eashwar@eashwar.com>"]
 edition = "2024"
 rust-version = "1.85"
