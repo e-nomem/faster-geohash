@@ -13,6 +13,7 @@ on:
       - README.md
       - LICENSE
       - .github/workflows/publish.yml
+permissions: {}
 
 concurrency:
   group: ${{ github.workflow_ref }}-${{ github.ref }}
@@ -23,6 +24,8 @@ jobs:
     if: github.event.pull_request.draft == false
     name: Lint / Rust
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Required to check out the repo
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
@@ -39,6 +42,8 @@ jobs:
     if: github.event.pull_request.draft == false
     name: Lint / Python
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Required to check out the repo
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
@@ -73,6 +78,8 @@ jobs:
             os-name: MacOS
     name: Tests / ${{ matrix.os-name }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read  # Required to check out the repo
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
