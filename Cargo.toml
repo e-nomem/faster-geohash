@@ -1,5 +1,5 @@
 [package]
-name = "fast-geohash"
+name = "faster-geohash"
 version = "0.0.1"
 authors = ["Eashwar Ranganathan <eashwar@eashwar.com>"]
 edition = "2024"
@@ -37,6 +37,6 @@ abi3 = [
 pyo3-build-config = { version = "0.27.1", features = ["resolve-config"] }
 
 [lib]
-name = "fast_geohash"
+name = "faster_geohash"
 crate-type = ["cdylib"]
 path = "src/lib.rs"

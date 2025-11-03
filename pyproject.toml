@@ -7,7 +7,7 @@ build-backend = "maturin"
 
 
 [project]
-name = "fast-geohash"
+name = "faster-geohash"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 feature in the Cargo.toml
@@ -39,8 +39,8 @@ dynamic = [
 ]
 
 [project.urls]
-homepage = "https://github.com/e-nomem/fast-geohash"
-changelog = "https://github.com/e-nomem/fast-geohash/blob/main/CHANGELOG.md"
+homepage = "https://github.com/e-nomem/faster-geohash"
+changelog = "https://github.com/e-nomem/faster-geohash/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
