@@ -1,5 +1,5 @@
-# fast-geohash
-[![PyPI version](https://img.shields.io/pypi/v/fast-geohash.svg)](https://pypi.org/projects/fast-geohash) [![License](https://img.shields.io/github/license/e-nomem/fast-geohash.svg)](https://github.com/e-nomem/fast-geohash/blob/main/LICENSE)
+# faster-geohash
+[![PyPI version](https://img.shields.io/pypi/v/faster-geohash.svg)](https://pypi.org/projects/faster-geohash) [![License](https://img.shields.io/github/license/e-nomem/faster-geohash.svg)](https://github.com/e-nomem/faster-geohash/blob/main/LICENSE)
 
 A fast geohash library for python implemented using the [rust geohash crate](https://github.com/georust/geohash).
 
@@ -7,11 +7,11 @@ This library supports python 3.9-3.14 and has experimental support for the 'free
 
 ## Usage
 ```python
-import fast_geohash
+import faster_geohash
 
-fast_geohash.encode((112.5584, 37.8324), precision=9)  # 'ww8p1r4t8'
+faster_geohash.encode((37.8324, 112.5584), precision=9)  # 'ww8p1r4t8'
 
-fast_geohash.decode('ww8p1r4t8')  # ('112.5584', '37.8324')
+faster_geohash.decode('ww8p1r4t8')  # ('37.8324', '112.5584')
 ```
 
 ## Building
@@ -21,7 +21,7 @@ This library uses `maturin` to compile the rust code into a python extension mod
 uv build --wheel .
 
 # Build directly from sdist
-uv build --wheel path/to/fast_geohash-0.0.1.tar.gz
+uv build --wheel path/to/faster_geohash-0.0.1.tar.gz
 ```
 
 ### ABI3 Support

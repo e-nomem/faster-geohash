@@ -10,7 +10,7 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 #[pymodule(gil_used = false)]
-mod fast_geohash {
+mod faster_geohash {
     use geohash::Coord;
     use pyo3::prelude::*;
 

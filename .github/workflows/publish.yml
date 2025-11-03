@@ -88,22 +88,21 @@ jobs:
           if-no-files-found: error
   publish-pypi:
     name: Publish to PyPI
-    if: github.repository == 'e-nomem/fast-geohash' && false  # TODO: Re-enable this when we are actually ready to publish
+    if: github.repository == 'e-nomem/faster-geohash'
     needs: [sdist, wheels]
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # Required for token exchange/trusted publishing
     environment:
       name: PyPI
-      url: https://pypi.org/project/fast-geohash/${{ github.ref_name }}
+      url: https://pypi.org/project/faster-geohash/${{ github.ref_name }}
     steps:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
           pattern: build-*
           path: dist
           merge-multiple: true
-      # TODO: Re-enable this when we are actually ready to publish
-      # - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
-      #   with:
-      #     packages-dir: dist
-      #     verify-metadata: true
+      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
+        with:
+          packages-dir: dist
+          verify-metadata: true
