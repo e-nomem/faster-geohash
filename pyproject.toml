@@ -56,7 +56,6 @@ dev = [
 ]
 lint = [
     "pre-commit>=4.3.0",
-    "ruff~=0.14.2",
     "ty==0.0.1a25",
 ]
 test = [
