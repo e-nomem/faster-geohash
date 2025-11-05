@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2025 Eashwar Ranganathan <eashwar@eashwar.com>
+# SPDX-License-Identifier: MIT
+
 [build-system]
 requires = [
     # Keep this in sync with dependency-groups.dev below
@@ -9,7 +12,7 @@ build-backend = "maturin"
 [project]
 name = "faster-geohash"
 license = "MIT"
-license-files = ["LICENSE"]
+license-files = ["LICENSES/MIT.txt"]
 requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 feature in the Cargo.toml
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
@@ -52,12 +55,16 @@ dev = [
     {include-group = "test"},
 ]
 lint = [
+    "pre-commit>=4.3.0",
     "ruff~=0.14.2",
     "ty==0.0.1a25",
 ]
 test = [
     "pytest>=8.4.2",
 ]
+
+[tool.uv.sources]
+maturin = { git = "https://github.com/e-nomem/maturin", branch = "remove-add-directory" }
 
 
 [tool.maturin]
