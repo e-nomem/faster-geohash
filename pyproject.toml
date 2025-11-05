@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2025 Eashwar Ranganathan <eashwar@eashwar.com>
+# SPDX-License-Identifier: MIT
+
 [build-system]
 requires = [
     # Keep this in sync with dependency-groups.dev below
@@ -9,7 +12,7 @@ build-backend = "maturin"
 [project]
 name = "faster-geohash"
 license = "MIT"
-license-files = ["LICENSE"]
+license-files = ["LICENSES/MIT.txt"]
 requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 feature in the Cargo.toml
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
@@ -52,12 +55,16 @@ dev = [
     {include-group = "test"},
 ]
 lint = [
-    "ruff~=0.14.2",
+    "pre-commit>=4.3.0",
     "ty==0.0.1a25",
+    {include-group = "test"},
 ]
 test = [
     "pytest>=8.4.2",
 ]
+
+[tool.uv.sources]
+maturin = { git = "https://github.com/e-nomem/maturin", branch = "remove-add-directory" }
 
 
 [tool.maturin]
@@ -124,7 +131,7 @@ select = [
 future-annotations = true
 
 [tool.ruff.lint.per-file-ignores]
-# Disable S101 (usage of assert) in tests
+# Disable S101 (forbid usage of assert) in tests
 "tests/**.py" = ["S101"]
 
 [tool.ruff.lint.isort]

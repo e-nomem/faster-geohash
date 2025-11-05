@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: © 2025 Eashwar Ranganathan <eashwar@eashwar.com>
+# SPDX-License-Identifier: MIT
+
 name: Publish
 on:
   push:
@@ -19,6 +22,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # v7.1.2
+        with:
+           enable-cache: false
       - run: |-
           SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
           echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> "$GITHUB_ENV"
@@ -61,20 +66,12 @@ jobs:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
           artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
-      - name: Set MACOS_DEPLOYMENT_TARGET if needed
-        # 10.12 is the minimum target for the rust compiler
-        # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
-        # 11.0 is the default used for aarch64
-        # See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
-        shell: bash
-        run: |-
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            if [[ "$(uname -m)" == "x86_64" ]]; then
-              echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
-            else
-              echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> "$GITHUB_ENV"
-            fi
-          fi
+      # 10.12 is the minimum target for the rust compiler
+      # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
+      # See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
+      - name: Set MACOSX_DEPLOYMENT_TARGET for x86_64
+        if: ${{ matrix.platform == 'macosx_x86_64' }}
+        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
       - uses: pypa/cibuildwheel@c53e541c2de29c8bb0a8f6e3ff13d96046e8000c  # SHA pinned at floating revision TODO: pin to next release
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
@@ -102,7 +99,7 @@ jobs:
           pattern: build-*
           path: dist
           merge-multiple: true
-      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
+      - uses: astral-sh/setup-uv@85856786d1ce8acfbcc2f13a5f3fbd6b938f9f41  # v7.1.2
         with:
-          packages-dir: dist
-          verify-metadata: true
+          enable-cache: false
+      - run: uv publish --trusted-publishing always

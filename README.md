@@ -1,5 +1,10 @@
+<!--
+SPDX-FileCopyrightText: © 2025 Eashwar Ranganathan <eashwar@eashwar.com>
+SPDX-License-Identifier: MIT
+-->
+
 # faster-geohash
-[![PyPI version](https://img.shields.io/pypi/v/faster-geohash.svg)](https://pypi.org/projects/faster-geohash) [![License](https://img.shields.io/github/license/e-nomem/faster-geohash.svg)](https://github.com/e-nomem/faster-geohash/blob/main/LICENSE)
+[![PyPI version](https://img.shields.io/pypi/v/faster-geohash.svg)](https://pypi.org/project/faster-geohash) [![License](https://img.shields.io/github/license/e-nomem/faster-geohash.svg)](https://github.com/e-nomem/faster-geohash/blob/main/LICENSE)
 
 A fast geohash library for python implemented using the [rust geohash crate](https://github.com/georust/geohash).
 
