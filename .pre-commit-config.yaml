@@ -11,7 +11,7 @@ repos:
       - id: reuse-lint-file
         exclude: ^(Cargo\.lock|uv\.lock)$
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0  # Use the ref you want to point at
+    rev: v6.0.0
     hooks:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -32,12 +32,11 @@ repos:
       - id: ruff-format
   - repo: local
     hooks:
-      - id: cargo-fmt
-        name: cargo fmt
+      - id: rustfmt
+        name: rustfmt
         language: system
         types: [rust]
-        pass_filenames: false
-        entry: cargo fmt
+        entry: rustfmt
       - id: cargo-clippy
         name: cargo clippy
         language: system
@@ -51,6 +50,4 @@ repos:
         types: [python]
         pass_filenames: false
         entry: ty check
-        args:
-          - "--output-format"
-          - github
+        args: ["--output-format", "github"]

@@ -71,8 +71,7 @@ maturin = { git = "https://github.com/e-nomem/maturin", branch = "remove-add-dir
 features = ["wheel"]
 locked = true
 exclude = [
-    ".github/**/*",
-    ".gitignore",
+    ".github/**",
 ]
 
 [tool.maturin.target.x86_64-apple-darwin]
