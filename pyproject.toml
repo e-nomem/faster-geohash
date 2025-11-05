@@ -130,7 +130,7 @@ select = [
 future-annotations = true
 
 [tool.ruff.lint.per-file-ignores]
-# Disable S101 (usage of assert) in tests
+# Disable S101 (forbid usage of assert) in tests
 "tests/**.py" = ["S101"]
 
 [tool.ruff.lint.isort]
