@@ -70,7 +70,7 @@ test = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "maturin", git = "https://github.com/e-nomem/maturin?branch=remove-add-directory" },
+    { name = "maturin", git = "https://github.com/PyO3/maturin?rev=a6f90c8f507ceb45e066320f78ae11b42bb2eff8" },
     { name = "maturin-import-hook", specifier = "~=0.3.0" },
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pytest", specifier = ">=8.4.2" },
@@ -143,7 +143,7 @@ wheels = [
 [[package]]
 name = "maturin"
 version = "1.9.6"
-source = { git = "https://github.com/e-nomem/maturin?branch=remove-add-directory#b243ae091de105de7c216a476609f06ecb9fb19f" }
+source = { git = "https://github.com/PyO3/maturin?rev=a6f90c8f507ceb45e066320f78ae11b42bb2eff8#a6f90c8f507ceb45e066320f78ae11b42bb2eff8" }
 dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
 ]

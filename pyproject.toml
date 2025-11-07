@@ -64,15 +64,14 @@ test = [
 ]
 
 [tool.uv.sources]
-maturin = { git = "https://github.com/e-nomem/maturin", branch = "remove-add-directory" }
+maturin = { git = "https://github.com/PyO3/maturin", rev = "a6f90c8f507ceb45e066320f78ae11b42bb2eff8" }
 
 
 [tool.maturin]
 features = ["wheel"]
 locked = true
 exclude = [
-    ".github/**/*",
-    ".gitignore",
+    ".github/**",
 ]
 
 [tool.maturin.target.x86_64-apple-darwin]
