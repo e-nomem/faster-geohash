@@ -4,7 +4,7 @@
 [build-system]
 requires = [
     # Keep this in sync with dependency-groups.dev below
-    "maturin~=1.9",
+    "maturin~=1.10",
 ]
 build-backend = "maturin"
 
@@ -48,7 +48,7 @@ changelog = "https://github.com/e-nomem/faster-geohash/blob/main/CHANGELOG.md"
 [dependency-groups]
 dev = [
     # Keep this in sync with build-system.requires above
-    "maturin~=1.9",
+    "maturin~=1.10",
     # See the docs on how to install this into your venv
     "maturin-import-hook~=0.3.0",
     {include-group = "lint"},
@@ -62,9 +62,6 @@ lint = [
 test = [
     "pytest>=8.4.2",
 ]
-
-[tool.uv.sources]
-maturin = { git = "https://github.com/PyO3/maturin", rev = "a6f90c8f507ceb45e066320f78ae11b42bb2eff8" }
 
 
 [tool.maturin]
