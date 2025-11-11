@@ -13,7 +13,7 @@ build-backend = "maturin"
 name = "faster-geohash"
 license = "MIT"
 license-files = ["LICENSES/MIT.txt"]
-requires-python = ">=3.9"  # Keep the lower bound here in sync with the abi3 feature in the Cargo.toml
+requires-python = ">=3.9"  # tag::MIN_PYTHON
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
 ]
@@ -21,7 +21,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.9",  # tag::MIN_PYTHON
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -100,7 +100,7 @@ repair-wheel-command = [
 [[tool.cibuildwheel.overrides]]
 # Free-threaded python is not currently ABI3 compatible (See PEP 803)
 # So we only add these options for non-free-threaded python to build api3
-select = "cp39-*"
+select = "cp39-*"  # tag::MIN_PYTHON
 config-settings."maturin.build-args" = "--features=abi3"
 inherit.repair-wheel-command = "append"
 repair-wheel-command = [
@@ -110,7 +110,7 @@ repair-wheel-command = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py39"  # tag::MIN_PYTHON
 
 [tool.ruff.lint]
 select = [

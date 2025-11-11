@@ -45,7 +45,9 @@ jobs:
       fail-fast: false
       matrix:
         # We only build abi3 wheels here, so just pick the minimum python version
-        python: ["cp39", "cp314t"]
+        python:
+          - "cp39"  # tag::MIN_PYTHON
+          - "cp314t"
         platform:
           - manylinux_x86_64
           - manylinux_aarch64
