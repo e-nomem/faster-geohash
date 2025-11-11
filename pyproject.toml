@@ -56,7 +56,7 @@ dev = [
 ]
 lint = [
     "pre-commit>=4.3.0",
-    "ty==0.0.1a25",
+    "ty==0.0.1a26",
     {include-group = "test"},
 ]
 test = [
