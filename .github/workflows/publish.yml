@@ -46,7 +46,7 @@ jobs:
       matrix:
         # We only build abi3 wheels here, so just pick the minimum python version
         python:
-          - "cp39"  # tag::MIN_PYTHON
+          - "cp310"  # tag::MIN_PYTHON
           - "cp314t"
         platform:
           - manylinux_x86_64
