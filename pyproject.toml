@@ -13,7 +13,7 @@ build-backend = "maturin"
 name = "faster-geohash"
 license = "MIT"
 license-files = ["LICENSES/MIT.txt"]
-requires-python = ">=3.9"  # tag::MIN_PYTHON
+requires-python = ">=3.10"  # tag::MIN_PYTHON
 authors = [
     {name = "Eashwar Ranganathan", email = "eashwar@eashwar.com"},
 ]
@@ -21,8 +21,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",  # tag::MIN_PYTHON
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.10",  # tag::MIN_PYTHON
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -55,13 +54,13 @@ dev = [
     {include-group = "test"},
 ]
 lint = [
-    "pre-commit>=4.3.0",
+    "pre-commit>=4.4.0",
     "ty==0.0.1a26",
     {include-group = "test"},
 ]
 test = [
     "packaging>=25.0",
-    "pytest>=8.4.2",
+    "pytest>=9.0.1",
 ]
 
 
@@ -101,7 +100,7 @@ repair-wheel-command = [
 [[tool.cibuildwheel.overrides]]
 # Free-threaded python is not currently ABI3 compatible (See PEP 803)
 # So we only add these options for non-free-threaded python to build api3
-select = "cp39-*"  # tag::MIN_PYTHON
+select = "cp310-*"  # tag::MIN_PYTHON
 config-settings."maturin.build-args" = "--features=abi3"
 inherit.repair-wheel-command = "append"
 repair-wheel-command = [
@@ -111,7 +110,7 @@ repair-wheel-command = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"  # tag::MIN_PYTHON
+target-version = "py310"  # tag::MIN_PYTHON
 
 [tool.ruff.lint]
 select = [

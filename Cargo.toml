@@ -3,7 +3,7 @@
 
 [package]
 name = "faster-geohash"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Eashwar Ranganathan <eashwar@eashwar.com>"]
 edition = "2024"
 rust-version = "1.85"
@@ -33,7 +33,7 @@ wheel = ["pyo3/extension-module"]
 abi3 = [
 	"wheel",
 	"pyo3/abi3",
-	"pyo3/abi3-py39",  # tag::MIN_PYTHON
+	"pyo3/abi3-py310",  # tag::MIN_PYTHON
 ]
 
 [build-dependencies]
