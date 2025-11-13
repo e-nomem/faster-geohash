@@ -22,6 +22,10 @@ mod faster_geohash {
 
     type CoordTuple = (f64, f64);
 
+    #[allow(non_upper_case_globals)]
+    #[pymodule_export]
+    const __version__: &str = env!("CARGO_PKG_VERSION");
+
     #[pyfunction]
     #[pyo3(signature = (coords, /, precision = 12))]
     fn encode(
@@ -98,7 +102,7 @@ enum FastGeohashError {
 impl Display for FastGeohashError {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), FmtError> {
         match self {
-            Self::InternalGeohashError(e) => write!(f, "internal geohash error: {e}"),
+            Self::InternalGeohashError(_) => write!(f, "internal geohash error"),
         }
     }
 }

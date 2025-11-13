@@ -1,5 +1,8 @@
 # SPDX-FileCopyrightText: © 2025 Eashwar Ranganathan <eashwar@eashwar.com>
 # SPDX-License-Identifier: MIT
+from typing import Final
+
+__version__: Final[str]
 
 def encode(coords: tuple[float, float], /, precision: int = 12) -> str:
 	"""Encodes a coordinate point into a geohash

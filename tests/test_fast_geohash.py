@@ -1,9 +1,21 @@
 # SPDX-FileCopyrightText: © 2025 Eashwar Ranganathan <eashwar@eashwar.com>
 # SPDX-License-Identifier: MIT
 
+from importlib import metadata
+
 import pytest
+from packaging.version import Version
 
 import faster_geohash
+
+
+def test_version_is_valid() -> None:
+	# This will raise an exception if the version string is not compatible with PEP 440
+	Version(faster_geohash.__version__)
+
+
+def test_versions_match() -> None:
+	assert faster_geohash.__version__ == metadata.version('faster-geohash')
 
 
 def test_encode_explicit_len() -> None:

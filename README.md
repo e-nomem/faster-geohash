@@ -4,11 +4,11 @@ SPDX-License-Identifier: MIT
 -->
 
 # faster-geohash
-[![PyPI version](https://img.shields.io/pypi/v/faster-geohash.svg)](https://pypi.org/project/faster-geohash) [![License](https://img.shields.io/github/license/e-nomem/faster-geohash.svg)](https://github.com/e-nomem/faster-geohash/blob/main/LICENSE)
+[![PyPI version](https://img.shields.io/pypi/v/faster-geohash.svg)](https://pypi.org/project/faster-geohash)
 
 A fast geohash library for python implemented using the [rust geohash crate](https://github.com/georust/geohash).
 
-This library supports python 3.9-3.14 and has experimental support for the 'free-threaded' mode in python 3.14.
+This library supports python 3.9-3.14 and has support for the 'free-threaded' mode in python 3.14+.
 
 ## Usage
 ```python
