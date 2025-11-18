@@ -50,14 +50,25 @@ dev = [
     "maturin~=1.10",
     # See the docs on how to install this into your venv
     "maturin-import-hook~=0.3.0",
+    {include-group = "github"},
     {include-group = "lint"},
     {include-group = "test"},
 ]
+
+# Group used to run github actions scripts
+github = [
+	"requests~=2.32",
+	"ruamel.yaml~=0.18.16",
+	"typer~=0.20.0",
+]
+
 lint = [
     "pre-commit>=4.4.0",
     "ty==0.0.1a26",
+    {include-group = "github"},
     {include-group = "test"},
 ]
+
 test = [
     "packaging>=25.0",
     "pytest>=9.0.1",
