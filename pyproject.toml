@@ -58,8 +58,9 @@ dev = [
 # Group used to run github actions scripts
 github = [
 	"requests~=2.32",
+	"rich~=14.2",
 	"ruamel.yaml~=0.18.16",
-	"typer~=0.20.0",
+	"typer-slim~=0.20.0",
 ]
 
 lint = [

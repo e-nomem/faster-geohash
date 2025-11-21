@@ -5,6 +5,7 @@
 from collections.abc import Generator
 from collections.abc import Mapping
 from dataclasses import dataclass
+from os import getenv
 from pathlib import Path
 from typing import Any
 
@@ -13,15 +14,16 @@ from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 from typer import Typer
 
+IS_CI = getenv('CI', '').casefold() == 'true'
+
 GITHUB_DIR = Path(__file__).parent.parent
 HASHES_FILE = GITHUB_DIR / 'actions-hashes.yaml'
 WORKFLOWS_DIR = GITHUB_DIR / 'workflows'
 
-YAML_SAFE = YAML(typ='safe')
 YAML_RT = YAML()
 YAML_RT.width = 4096  # Prevent ruamel from line-wrapping our files
 
-app = Typer()
+app = Typer(pretty_exceptions_show_locals=not IS_CI)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -30,19 +32,18 @@ class ActionVersion:
 	version: str
 
 
-class UnknownActionError(ValueError):
-	action: str
-
-
-def load_hashes() -> Mapping[str, ActionVersion]:
-	with open(HASHES_FILE) as f:
-		data = YAML_SAFE.load(f)
-		return {k: ActionVersion(**v) for k, v in data.items()}
-
-
 def rt_load_yaml(path: Path) -> CommentedMap:
 	with open(path) as f:
 		return YAML_RT.load(f)
+
+
+def rt_dump_yaml(path: Path, data: CommentedMap) -> None:
+	with open(path, 'w') as f:
+		YAML_RT.dump(data, f)
+
+
+def load_hashes() -> Mapping[str, ActionVersion]:
+	return {k: ActionVersion(**v) for k, v in rt_load_yaml(HASHES_FILE).items()}
 
 
 def all_workflow_files() -> Generator[Path, None, None]:
@@ -74,14 +75,18 @@ def update_workflow(hashes: Mapping[str, ActionVersion], workflow: CommentedMap)
 
 
 def _call_github(action: str, path: str) -> Mapping[str, Any]:
-	return requests.get(
+	response = requests.get(
 		url=f'https://api.github.com/repos/{action}/{path}',
 		headers={
 			'Accept': 'application/vnd.github+json',
 			'X-GitHub-Api-Version': '2022-11-28',
 		},
 		timeout=3.0,
-	).json()
+	)
+	if response.status_code != requests.codes['ok']:
+		raise RuntimeError(f'Received unexpected response from Github: {action=}, {path=}, {response.status_code=}')
+
+	return response.json()
 
 
 def get_latest_release_tag(action: str) -> str:
@@ -97,25 +102,27 @@ def get_tag_sha(action: str, tag: str) -> str:
 
 
 @app.command()
-def update() -> None:
+def update(action: str | None = None) -> None:
 	updated_actions = {}
 	hashes = rt_load_yaml(HASHES_FILE)
-	for action, details in hashes.items():
-		latest_tag = get_latest_release_tag(action)
-		latest_sha = get_tag_sha(action, latest_tag)
+	for current_action, details in hashes.items():
+		if action is not None and current_action != action:
+			continue
+
+		latest_tag = get_latest_release_tag(current_action)
+		latest_sha = get_tag_sha(current_action, latest_tag)
 
 		if details['sha'] != latest_sha or details['version'] != latest_tag:
-			updated_actions[action] = (details['version'], latest_tag)
+			updated_actions[current_action] = (details['version'], latest_tag)
 			details['sha'] = latest_sha
 			details['version'] = latest_tag
 
 	if updated_actions:
-		with open(HASHES_FILE, 'w') as f:
-			YAML_RT.dump(hashes, f)
+		rt_dump_yaml(HASHES_FILE, hashes)
 
 		print('The following actions were updated:')
-		for action, versions in updated_actions.items():
-			print(f' - {action}: {versions[0]} -> {versions[1]}')
+		for current_action, versions in updated_actions.items():
+			print(f' - {current_action}: {versions[0]} -> {versions[1]}')
 
 
 @app.command()
@@ -127,8 +134,7 @@ def check(fix: bool = False) -> None:
 		if result := update_workflow(hashes, workflow):
 			files_needing_action[workflow_file] = result
 			if fix:
-				with open(workflow_file, 'w') as f:
-					YAML_RT.dump(workflow, f)
+				rt_dump_yaml(workflow_file, workflow)
 
 	updated_files = [f for f, r in files_needing_action.items() if isinstance(r, bool)]
 	invalid_files = {f: r for f, r in files_needing_action.items() if not isinstance(r, bool)}
