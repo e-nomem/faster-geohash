@@ -64,8 +64,8 @@ github = [
 ]
 
 lint = [
-    "pre-commit>=4.4.0",
-    "ty==0.0.1a26",
+    "pre-commit>=4.5.0",
+    "ty==0.0.1a29",
     {include-group = "github"},
     {include-group = "test"},
 ]
@@ -79,6 +79,7 @@ test = [
 [tool.maturin]
 features = ["wheel"]
 locked = true
+editable-profile = "dev"
 exclude = [
     ".github/**",
 ]
