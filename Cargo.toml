@@ -37,7 +37,7 @@ abi3 = [
 ]
 
 [build-dependencies]
-pyo3-build-config = { version = "0.27.1", features = ["resolve-config"] }
+pyo3-build-config = { version = "0.27.2", features = ["resolve-config"] }
 
 [lib]
 name = "faster_geohash"
