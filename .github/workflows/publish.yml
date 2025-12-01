@@ -4,7 +4,7 @@
 name: Publish
 on:
   push:
-    tags: ['*']
+    tags: ["*"]
 permissions: {}
 
 jobs:
@@ -12,66 +12,67 @@ jobs:
     if: github.event.pull_request.draft == false
     name: Check Actions
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     permissions:
-      contents: read  # Required to check out the repo
+      contents: read # Required to check out the repo
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3  # v6.0.0
-      with:
-        persist-credentials: false
-    - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244  # v7.1.4
-    - run: uv sync --locked --only-group github
-    - run: uv run --no-sync python .github/scripts/actions-hashes.py check
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
+      - run: uv sync --locked --only-group github
+      - run: uv run --no-sync python .github/scripts/actions-hashes.py check
   sdist:
     name: Build / Sdist
     needs: [actions]
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # Required to check out the repo
+      contents: read # Required to check out the repo
     outputs:
       artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
       artifact-filename: ${{ steps.set-artifact-filename.outputs.artifact-filename }}
       source-date-epoch: ${{ steps.set-source-date-epoch.outputs.source-date-epoch }}
     steps:
-    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3  # v6.0.0
-      with:
-        persist-credentials: false
-    - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244  # v7.1.4
-      with:
-        enable-cache: false
-    - run: |-
-        SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
-        echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> "$GITHUB_ENV"
-        echo "source-date-epoch=$SOURCE_DATE_EPOCH" >> "$GITHUB_OUTPUT"
-      id: set-source-date-epoch
-    - run: uv build --sdist .
-    - run: uv tool run twine check --strict dist/*
-    - run: echo "artifact-filename=$(find dist -name '*.tar.gz' -printf '%f')" >> "$GITHUB_OUTPUT"
-      id: set-artifact-filename
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4    # v5.0.0
-      id: upload-artifact
-      with:
-        name: build-sdist
-        path: dist/*.tar.gz
-        if-no-files-found: error
-        compression-level: 0    # The tarball is already compressed
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
+        with:
+          enable-cache: false
+      - run: |-
+          SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
+          echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> "$GITHUB_ENV"
+          echo "source-date-epoch=$SOURCE_DATE_EPOCH" >> "$GITHUB_OUTPUT"
+        id: set-source-date-epoch
+      - run: uv build --sdist .
+      - run: uv tool run twine check --strict dist/*
+      - run: echo "artifact-filename=$(find dist -name '*.tar.gz' -printf '%f')" >> "$GITHUB_OUTPUT"
+        id: set-artifact-filename
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        id: upload-artifact
+        with:
+          name: build-sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          compression-level: 0 # The tarball is already compressed
   wheels:
     strategy:
       fail-fast: false
       matrix:
         # We only build abi3 wheels here, so just pick the minimum python version
         python:
-        - cp310      # tag::MIN_PYTHON
-        - cp314t
+          - cp310 # tag::MIN_PYTHON
+          - cp314t
         platform:
-        - manylinux_x86_64
-        - manylinux_aarch64
-        - macosx_x86_64
-        - macosx_arm64
+          - manylinux_x86_64
+          - manylinux_aarch64
+          - macosx_x86_64
+          - macosx_arm64
         include:
-        - {platform: manylinux_x86_64, os: ubuntu-24.04}
-        - {platform: manylinux_aarch64, os: ubuntu-24.04-arm}
-        - {platform: macosx_x86_64, os: macos-15-intel}
-        - {platform: macosx_arm64, os: macos-15}
+          - { platform: manylinux_x86_64, os: ubuntu-24.04 }
+          - { platform: manylinux_aarch64, os: ubuntu-24.04-arm }
+          - { platform: macosx_x86_64, os: macos-15-intel }
+          - { platform: macosx_arm64, os: macos-15 }
     name: Build / Wheel / ${{ matrix.python }}-${{ matrix.platform }}
     needs: [sdist]
     runs-on: ${{ matrix.os }}
@@ -79,44 +80,44 @@ jobs:
     env:
       SOURCE_DATE_EPOCH: ${{ needs.sdist.outputs.source-date-epoch }}
     steps:
-    - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53    # v6.0.0
-      with:
-        artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
-    - uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c    # v1.15.2
-    # 10.12 is the minimum target for the rust compiler
-    # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
-    # See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
-    - name: Set MACOSX_DEPLOYMENT_TARGET for x86_64
-      if: ${{ matrix.platform == 'macosx_x86_64' }}
-      run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
-    - uses: pypa/cibuildwheel@63fd63b352a9a8bdcc24791c9dbee952ee9a8abc  # v3.3.0
-      env:
-        CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
-      with:
-        extras: uv
-        package-dir: ${{ needs.sdist.outputs.artifact-filename }}
-    - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4    # v5.0.0
-      with:
-        name: build-wheel-${{ matrix.python }}-${{ matrix.platform }}
-        path: wheelhouse/*.whl
-        if-no-files-found: error
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
+      - uses: actions-rust-lang/setup-rust-toolchain@1780873c7b576612439a134613cc4cc74ce5538c # v1.15.2
+        # 10.12 is the minimum target for the rust compiler
+        # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
+        # See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
+      - name: Set MACOSX_DEPLOYMENT_TARGET for x86_64
+        if: ${{ matrix.platform == 'macosx_x86_64' }}
+        run: echo "MACOSX_DEPLOYMENT_TARGET=10.12" >> "$GITHUB_ENV"
+      - uses: pypa/cibuildwheel@63fd63b352a9a8bdcc24791c9dbee952ee9a8abc # v3.3.0
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
+        with:
+          extras: uv
+          package-dir: ${{ needs.sdist.outputs.artifact-filename }}
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: build-wheel-${{ matrix.python }}-${{ matrix.platform }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
   publish-pypi:
     name: Publish to PyPI
     if: github.repository == 'e-nomem/faster-geohash'
     needs: [sdist, wheels]
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for token exchange/trusted publishing
+      id-token: write # Required for token exchange/trusted publishing
     environment:
       name: PyPI
       url: https://pypi.org/project/faster-geohash/${{ github.ref_name }}
     steps:
-    - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53    # v6.0.0
-      with:
-        pattern: build-*
-        path: dist
-        merge-multiple: true
-    - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244  # v7.1.4
-      with:
-        enable-cache: false
-    - run: uv publish --trusted-publishing always
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          pattern: build-*
+          path: dist
+          merge-multiple: true
+      - uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
+        with:
+          enable-cache: false
+      - run: uv publish --trusted-publishing always

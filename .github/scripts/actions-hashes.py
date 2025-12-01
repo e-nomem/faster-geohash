@@ -22,6 +22,7 @@ WORKFLOWS_DIR = GITHUB_DIR / 'workflows'
 
 YAML_RT = YAML()
 YAML_RT.width = 4096  # Prevent ruamel from line-wrapping our files
+YAML_RT.indent(mapping=2, offset=2, sequence=4)
 
 app = Typer(pretty_exceptions_show_locals=not IS_CI)
 
