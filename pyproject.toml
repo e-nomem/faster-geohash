@@ -76,6 +76,18 @@ test = [
 ]
 
 
+[tool.uv]
+cache-keys = [
+	{file = "build.rs"},
+	{file = "Cargo.toml"},
+	{file = "Cargo.lock"},
+	{file = "faster_geohash.pyi"},
+	{file = "pyproject.toml"},
+	{file = "rust-toolchain.toml"},
+	{file = "src/**/*.rs"},
+]
+
+
 [tool.maturin]
 features = ["wheel"]
 locked = true
