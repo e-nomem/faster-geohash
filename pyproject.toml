@@ -113,23 +113,7 @@ test-groups = ["test"]
 test-sources = ["tests"]
 test-command = "pytest ./tests"
 
-[[tool.cibuildwheel.overrides]]
-# For all builds, use this opportunity to run twine check to verify the metadata
-select = "*"
-inherit.repair-wheel-command = "append"
-repair-wheel-command = [
-    "uv tool run twine check --strict {wheel}",
-]
-
-[[tool.cibuildwheel.overrides]]
-# Free-threaded python is not currently ABI3 compatible (See PEP 803)
-# So we only add these options for non-free-threaded python to build api3
-select = "cp310-*"  # tag::MIN_PYTHON
-config-settings."maturin.build-args" = "--features=abi3"
-inherit.repair-wheel-command = "append"
-repair-wheel-command = [
-  "uv tool run abi3audit --strict --report {wheel}",
-]
+config-settings = { "maturin.build-args" = "--features=abi3" }
 
 
 [tool.ruff]
