@@ -2,26 +2,26 @@
 # SPDX-License-Identifier: MIT
 
 actions/cache:
-  sha: 0057852bfaa89a56745cba8c7296529d2fc39830
-  version: v4.3.0
+  sha: 55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+  version: v6.1.0
 actions/checkout:
-  sha: 1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
-  version: v6.0.0
+  sha: 3d3c42e5aac5ba805825da76410c181273ba90b1
+  version: v7.0.1
 actions/download-artifact:
-  sha: 018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
-  version: v6.0.0
+  sha: 3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+  version: v8.0.1
 actions/upload-artifact:
-  sha: 330a01c490aca151604b8cf639adc76d48f6c5d4
-  version: v5.0.0
+  sha: 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+  version: v7.0.1
 actions-rust-lang/setup-rust-toolchain:
-  sha: 1780873c7b576612439a134613cc4cc74ce5538c
-  version: v1.15.2
+  sha: 166cdcfd11aee3cb47222f9ddb555ce30ddb9659
+  version: v1.17.0
 astral-sh/setup-uv:
-  sha: 1e862dfacbd1d6d858c55d9b792c756523627244
-  version: v7.1.4
+  sha: 20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+  version: v10.0.1
 pypa/cibuildwheel:
   sha: 63fd63b352a9a8bdcc24791c9dbee952ee9a8abc
   version: v3.3.0
 re-actors/alls-green:
-  sha: 05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe
-  version: v1.2.2
+  sha: b5b5b37504aa4183270bd3d855c52a67f212be35
+  version: v1.3.0
