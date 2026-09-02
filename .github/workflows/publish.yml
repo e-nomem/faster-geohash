@@ -7,6 +7,10 @@ on:
     tags: ['*']
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   actions:
     if: github.event.pull_request.draft == false
@@ -85,6 +89,8 @@ jobs:
         with:
           artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
       - uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659  # v1.17.0
+        with:
+          cache: false
       - name: Set MACOSX_DEPLOYMENT_TARGET for x86_64
         # 10.12 is the minimum target for the rust compiler
         # but cibuildwheel uses a 10.9 for x86_64 macOS on python 3.8-3.11
