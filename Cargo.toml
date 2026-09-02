@@ -6,7 +6,7 @@ name = "faster-geohash"
 version = "0.2.0"
 authors = ["Eashwar Ranganathan <eashwar@eashwar.com>"]
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.95"
 
 description = "A fast geohashing library"
 readme = "README.md"
