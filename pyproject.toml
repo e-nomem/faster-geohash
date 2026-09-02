@@ -57,22 +57,22 @@ dev = [
 
 # Group used to run github actions scripts
 github = [
-	"requests~=2.32",
-	"rich~=14.2",
-	"ruamel.yaml~=0.18.16",
-	"typer-slim~=0.20.0",
+	"requests~=2.34",
+	"rich~=15.0",
+	"ruamel.yaml~=0.19.1",
+	"typer~=0.27.2",
 ]
 
 lint = [
-    "pre-commit>=4.5.0",
-    "ty==0.0.1a29",
+    "pre-commit>=4.6.2",
+    "ty==0.0.77",
     {include-group = "github"},
     {include-group = "test"},
 ]
 
 test = [
-    "packaging>=25.0",
-    "pytest>=9.0.1",
+    "packaging>=26.3",
+    "pytest>=9.1.1",
 ]
 
 
