@@ -93,6 +93,7 @@ jobs:
   tests-green:
     if: always()
     needs: [tests]
+    name: tests-green
     runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions: {}
