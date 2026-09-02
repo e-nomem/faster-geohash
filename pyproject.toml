@@ -96,24 +96,10 @@ exclude = [
 ]
 
 [tool.maturin.target.x86_64-apple-darwin]
-# 10.12 is the minimum target for the rust compiler
-# Note that cibuildwheel has a lower target that is overridden in the publish workflow
-# See https://cibuildwheel.pypa.io/en/stable/platforms/#macos-version-compatibility
 macos-deployment-target = "10.12"
 
 [tool.maturin.target.aarch64-apple-darwin]
-# 11.0 is the minimum target used by cibuildwheel for aarch64 macOS
 macos-deployment-target = "11.0"
-
-
-[tool.cibuildwheel]
-build-frontend = "build[uv]"
-
-test-groups = ["test"]
-test-sources = ["tests"]
-test-command = "pytest ./tests"
-
-config-settings = { "maturin.build-args" = "--features=abi3" }
 
 
 [tool.ruff]
