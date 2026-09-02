@@ -29,6 +29,8 @@ pyo3 = "0.29"
 abi3 = [
 	"pyo3/abi3",
 	"pyo3/abi3-py310",  # tag::MIN_PYTHON
+	"pyo3/abi3t",
+	"pyo3/abi3t-py315",
 ]
 
 [build-dependencies]
