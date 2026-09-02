@@ -5,15 +5,15 @@ name: Publish
 on:
   push:
     tags: ['*']
+  workflow_dispatch: {}
 permissions: {}
 
 concurrency:
-  group: ${{ github.workflow_ref }}-${{ github.ref }}
+  group: ${{ github.workflow_ref }}-${{ github.sha }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
   actions:
-    if: github.event.pull_request.draft == false
     name: Check Actions
     runs-on: ubuntu-latest
     timeout-minutes: 1
@@ -110,7 +110,7 @@ jobs:
           if-no-files-found: error
   publish-pypi:
     name: Publish to PyPI
-    if: github.repository == 'e-nomem/faster-geohash'
+    if: github.repository == 'e-nomem/faster-geohash' && startsWith(github.ref, 'refs/tags/')
     needs: [sdist, wheels]
     runs-on: ubuntu-latest
     permissions:
