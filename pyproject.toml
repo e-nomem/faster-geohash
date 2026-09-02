@@ -115,6 +115,13 @@ test-command = "pytest ./tests"
 
 config-settings = { "maturin.build-args" = "--features=abi3" }
 
+[[tool.cibuildwheel.overrides]]
+# For free-threaded builds, disable abi3audit
+# For cp314t, the build is not abi3
+# For cp315t+, as of 2026-09-02, abi3audit cannot handle `abi3.abi3t` tagged wheels properly
+select = "cp3*t-*"
+audit-command = ""
+
 
 [tool.ruff]
 line-length = 120
