@@ -4,7 +4,7 @@
 [build-system]
 requires = [
     # Keep this in sync with dependency-groups.dev below
-    "maturin~=1.10,>=1.10.2",  # https://github.com/PyO3/maturin/issues/2855
+    "maturin~=1.15",
 ]
 build-backend = "maturin"
 
@@ -19,6 +19,7 @@ authors = [
 ]
 classifiers = [
     "Intended Audience :: Developers",
+    "Python :: Implementation :: CPython",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",  # tag::MIN_PYTHON
@@ -26,6 +27,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: Free Threading :: 3 - Stable",
     "Programming Language :: Rust",
     "Development Status :: 4 - Beta",
@@ -47,9 +49,7 @@ changelog = "https://github.com/e-nomem/faster-geohash/blob/main/CHANGELOG.md"
 [dependency-groups]
 dev = [
     # Keep this in sync with build-system.requires above
-    "maturin~=1.10,>=1.10.2",
-    # See the docs on how to install this into your venv
-    "maturin-import-hook~=0.3.0",
+    "maturin~=1.15",
     {include-group = "github"},
     {include-group = "lint"},
     {include-group = "test"},
@@ -89,7 +89,6 @@ cache-keys = [
 
 
 [tool.maturin]
-features = ["wheel"]
 locked = true
 editable-profile = "dev"
 exclude = [

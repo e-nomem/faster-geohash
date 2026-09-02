@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 [toolchain]
-channel = "1.85"
+channel = "1.95"
 profile = "minimal"
 components = ["clippy", "rustfmt"]
