@@ -89,7 +89,6 @@ cache-keys = [
 
 
 [tool.maturin]
-features = ["wheel"]
 locked = true
 editable-profile = "dev"
 exclude = [
