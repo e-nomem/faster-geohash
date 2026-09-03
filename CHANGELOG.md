@@ -4,13 +4,14 @@ SPDX-License-Identifier: MIT
 -->
 
 # Version 0.2.0
-Unreleased
+Released September 2, 2026
 
 ### Breaking
  - Dropping support for python 3.9
 
 ### Minor
  - Free-threaded python support now considered stable
+ - Added support for python 3.15 and abi3t
 
 ### Misc
  - Github actions improvements

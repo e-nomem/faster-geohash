@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 A fast geohash library for python implemented using the [rust geohash crate](https://github.com/georust/geohash).
 
-This library supports python 3.9-3.14 and has support for the 'free-threaded' mode in python 3.14+.
+This library supports python 3.10-3.14 and has support for the 'free-threaded' mode in python 3.14+.
 
 ## Usage
 ```python
@@ -26,7 +26,7 @@ This library uses `maturin` to compile the rust code into a python extension mod
 uv build --wheel .
 
 # Build directly from sdist
-uv build --wheel path/to/faster_geohash-0.1.0.tar.gz
+uv build --wheel path/to/faster_geohash-0.2.0.tar.gz
 ```
 
 ### ABI3 Support
