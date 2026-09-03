@@ -96,8 +96,11 @@ jobs:
         #       directly.
         if: ${{ startsWith(matrix.platform, 'macosx_') }}
         run: |
-          echo "_PYTHON_HOST_PLATFORM=macosx-${{ matrix.macos_deployment_target }}-${{ matrix.arch }}" >> "$GITHUB_ENV"
-          echo "MACOSX_DEPLOYMENT_TARGET=${{ matrix.macos_deployment_target }}" >> "$GITHUB_ENV"
+          echo "_PYTHON_HOST_PLATFORM=macosx-$DEPLOYMENT_TARGET-$TARGET_ARCH" >> "$GITHUB_ENV"
+          echo "MACOSX_DEPLOYMENT_TARGET=$DEPLOYMENT_TARGET" >> "$GITHUB_ENV"
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+          DEPLOYMENT_TARGET: ${{ matrix.macos_deployment_target }}
       - uses: pypa/cibuildwheel@1828c10ab37f080699c7b81cea34097c684a7074  # v4.2.0
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
