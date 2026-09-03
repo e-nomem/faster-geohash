@@ -59,34 +59,26 @@ jobs:
           path: dist/*.tar.gz
           if-no-files-found: error
           compression-level: 0 # The tarball is already compressed
+  generate_matrix:
+    name: Generate Wheel Matrix
+    needs: [actions]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required to check out the repo
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - run: echo "matrix=$(./.github/scripts/generate-wheel-matrix.py)" >> "$GITHUB_OUTPUT"
   wheels:
     strategy:
       fail-fast: false
       matrix:
-        # We mostly build only abi3/abi3t wheels here, so just pick the minimum python version
-        python:
-          - cp310 # tag::MIN_PYTHON
-          - cp314t
-          - cp315t
-        platform:
-          - manylinux_x86_64
-          - manylinux_aarch64
-          - macosx_x86_64
-          - macosx_arm64
-        include:
-          # Enrich platform with GH actions runner and arch
-          - {platform: manylinux_x86_64, os: ubuntu-24.04, arch: x86_64}
-          - {platform: manylinux_aarch64, os: ubuntu-24.04-arm, arch: arm64}
-          # For MacOS, also set deployment target
-          # MacOS on arm64 => 11.0
-          # MacOS on x86_64 + cp39-cp311  => 10.12 (minimum from rust)
-          # MacOS on x86_64 + cp312-cp313 => 10.13 (minimum from cibuildwheel)
-          # MacOS on x86_64 + cp314+      => 10.15 (minimum from cibuildwheel)
-          - {python: cp310, platform: macosx_x86_64, os: macos-15-intel, arch: x86_64, deployment_target: '10.12'}  # tag::MIN_PYTHON
-          - {platform: macosx_x86_64, os: macos-15-intel, arch: x86_64, deployment_target: '10.15'}
-          - {platform: macosx_arm64, os: macos-15, arch: arm64, deployment_target: '11.0'}
+        include: ${{ fromJSON(needs.generate_matrix.outputs.matrix) }}
     name: Build / Wheel / ${{ matrix.python }}-${{ matrix.platform }}
-    needs: [sdist]
+    needs: [sdist, generate_matrix]
     runs-on: ${{ matrix.os }}
     permissions: {}
     env:
@@ -104,8 +96,8 @@ jobs:
         #       directly.
         if: ${{ startsWith(matrix.platform, 'macosx_') }}
         run: |
-          echo "_PYTHON_HOST_PLATFORM=macosx-${{ matrix.deployment_target }}-${{ matrix.arch }}" >> "$GITHUB_ENV"
-          echo "MACOSX_DEPLOYMENT_TARGET=${{ matrix.deployment_target }}" >> "$GITHUB_ENV"
+          echo "_PYTHON_HOST_PLATFORM=macosx-${{ matrix.macos_deployment_target }}-${{ matrix.arch }}" >> "$GITHUB_ENV"
+          echo "MACOSX_DEPLOYMENT_TARGET=${{ matrix.macos_deployment_target }}" >> "$GITHUB_ENV"
       - uses: pypa/cibuildwheel@1828c10ab37f080699c7b81cea34097c684a7074  # v4.2.0
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
