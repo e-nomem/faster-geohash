@@ -74,9 +74,16 @@ jobs:
           - macosx_x86_64
           - macosx_arm64
         include:
+          # Enrich platform with GH actions runner and arch
           - {platform: manylinux_x86_64, os: ubuntu-24.04, arch: x86_64}
           - {platform: manylinux_aarch64, os: ubuntu-24.04-arm, arch: arm64}
-          - {platform: macosx_x86_64, os: macos-15-intel, arch: x86_64, deployment_target: '10.12'}
+          # For MacOS, also set deployment target
+          # MacOS on arm64 => 11.0
+          # MacOS on x86_64 + cp39-cp311  => 10.12 (minimum from rust)
+          # MacOS on x86_64 + cp312-cp313 => 10.13 (minimum from cibuildwheel)
+          # MacOS on x86_64 + cp314+      => 10.15 (minimum from cibuildwheel)
+          - {python: cp310, platform: macosx_x86_64, os: macos-15-intel, arch: x86_64, deployment_target: '10.12'}  # tag::MIN_PYTHON
+          - {platform: macosx_x86_64, os: macos-15-intel, arch: x86_64, deployment_target: '10.15'}
           - {platform: macosx_arm64, os: macos-15, arch: arm64, deployment_target: '11.0'}
     name: Build / Wheel / ${{ matrix.python }}-${{ matrix.platform }}
     needs: [sdist]
