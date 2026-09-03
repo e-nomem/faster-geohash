@@ -19,7 +19,6 @@ authors = [
 ]
 classifiers = [
     "Intended Audience :: Developers",
-    "Python :: Implementation :: CPython",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",  # tag::MIN_PYTHON
