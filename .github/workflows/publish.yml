@@ -16,6 +16,8 @@ concurrency:
 jobs:
   check-actions:
     uses: $/.github/workflows/zizmor.yml
+    permissions:
+      security-events: write # Required to upload SARIF files
   sdist:
     name: Build / Sdist
     needs: [check-actions]

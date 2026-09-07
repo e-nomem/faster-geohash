@@ -22,6 +22,8 @@ jobs:
   check-actions:
     if: github.event.pull_request.draft == false
     uses: $/.github/workflows/zizmor.yml
+    permissions:
+      security-events: write # Required to upload SARIF files
   lint:
     needs: [check-actions]
     name: Lint
