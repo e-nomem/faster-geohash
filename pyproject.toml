@@ -49,23 +49,13 @@ changelog = "https://github.com/e-nomem/faster-geohash/blob/main/CHANGELOG.md"
 dev = [
     # Keep this in sync with build-system.requires above
     "maturin~=1.15",
-    {include-group = "github"},
     {include-group = "lint"},
     {include-group = "test"},
 ]
 
-# Group used to run github actions scripts
-github = [
-	"requests~=2.34",
-	"rich~=15.0",
-	"ruamel.yaml~=0.19.1",
-	"typer~=0.27.2",
-]
-
 lint = [
     "pre-commit>=4.6.2",
-    "ty==0.0.77",
-    {include-group = "github"},
+    "ty==0.0.76",
     {include-group = "test"},
 ]
 
@@ -85,6 +75,7 @@ cache-keys = [
 	{file = "rust-toolchain.toml"},
 	{file = "src/**/*.rs"},
 ]
+exclude-newer = "7 days"
 
 
 [tool.maturin]

@@ -11,6 +11,7 @@ on:
       - synchronize
       - reopened
       - ready_for_review
+
 permissions: {}
 
 concurrency:
@@ -18,39 +19,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  actions:
+  check-actions:
     if: github.event.pull_request.draft == false
-    name: Check Actions
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
+    uses: $/.github/workflows/zizmor.yml
     permissions:
-      contents: read # Required to check out the repo
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
-      - run: uv sync --locked --only-group github
-      - run: uv run --no-sync python .github/scripts/actions-hashes.py check
+      security-events: write # Required to upload SARIF files
   lint:
-    needs: [actions]
+    needs: [check-actions]
     name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
       contents: read # Required to check out the repo
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659  # v1.17.0
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+      - uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1.17.0
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
       - run: uv sync --locked --only-group lint
       - id: determine-python-version
         name: Determine python version
         shell: bash
         run: echo "python-version=$(uv run --no-sync python -V | cut -d' ' -f2)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ steps.determine-python-version.outputs.python-version }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -81,11 +73,11 @@ jobs:
     permissions:
       contents: read # Required to check out the repo
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659  # v1.17.0
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+      - uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1.17.0
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --locked --no-default-groups --group test
@@ -98,6 +90,6 @@ jobs:
     timeout-minutes: 1
     permissions: {}
     steps:
-      - uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35  # v1.3.0
+      - uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35 # v1.3.0
         with:
           jobs: ${{ toJSON(needs) }}

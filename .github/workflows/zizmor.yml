@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: © 2026 Eashwar Ranganathan <eashwar@eashwar.com>
+# SPDX-License-Identifier: MIT
+
+name: GitHub Actions Security Analysis
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  zizmor:
+    name: Run zizmor
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      security-events: write # Required to upload SARIF files
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@70fb788f84895a7701f5643d103d587e460b5c99 # v0.6.3
