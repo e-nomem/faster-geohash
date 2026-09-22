@@ -6,6 +6,7 @@ on:
   workflow_call:
 
 permissions: {}
+cache-mode: none
 
 jobs:
   zizmor:
