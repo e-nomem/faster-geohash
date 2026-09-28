@@ -22,12 +22,12 @@ PYTHON_DEFS = [
 OS_DEFS = [
 	{
 		'platform': 'manylinux_x86_64',
-		'os': 'ubuntu-24.04',
+		'os': 'ubuntu-26.04',
 		'arch': 'x86_64',
 	},
 	{
 		'platform': 'manylinux_aarch64',
-		'os': 'ubuntu-24.04-arm',
+		'os': 'ubuntu-26.04-arm',
 		'arch': 'arm64',
 	},
 	{
