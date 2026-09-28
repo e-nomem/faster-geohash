@@ -32,12 +32,12 @@ OS_DEFS = [
 	},
 	{
 		'platform': 'macosx_x86_64',
-		'os': 'macos-15-intel',
+		'os': 'macos-26-intel',
 		'arch': 'x86_64',
 	},
 	{
 		'platform': 'macosx_arm64',
-		'os': 'macos-15',
+		'os': 'macos-26',
 		'arch': 'arm64',
 		'macos_deployment_target': '11.0',
 	},
