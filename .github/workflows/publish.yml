@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           enable-cache: false
       - run: |-
@@ -45,7 +45,7 @@ jobs:
       - run: uv tool run twine check --strict dist/*
       - run: echo "artifact-filename=$(find dist -name '*.tar.gz' -printf '%f')" >> "$GITHUB_OUTPUT"
         id: set-artifact-filename
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         id: upload-artifact
         with:
           name: build-sdist
@@ -82,7 +82,7 @@ jobs:
     env:
       SOURCE_DATE_EPOCH: ${{ needs.sdist.outputs.source-date-epoch }}
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           artifact-ids: ${{ needs.sdist.outputs.artifact-id }}
       - name: Set MacOS deployment target
@@ -99,13 +99,13 @@ jobs:
         env:
           TARGET_ARCH: ${{ matrix.arch }}
           DEPLOYMENT_TARGET: ${{ matrix.macos_deployment_target }}
-      - uses: pypa/cibuildwheel@adba99c781d3746d38b3a09b1cf797965bcb7fe6 # v4.3.0
+      - uses: pypa/cibuildwheel@b3395e271a35f73dad77f21802abe9b986dfe299 # v4.3.1
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.platform }}
         with:
           extras: uv
           package-dir: ${{ needs.sdist.outputs.artifact-filename }}
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-wheel-${{ matrix.python }}-${{ matrix.platform }}
           path: wheelhouse/*.whl
@@ -121,12 +121,12 @@ jobs:
       name: PyPI
       url: https://pypi.org/project/faster-geohash/${{ github.ref_name }}
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: build-*
           path: dist
           merge-multiple: true
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           enable-cache: false
       - run: uv publish --trusted-publishing always
