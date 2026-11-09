@@ -6,7 +6,7 @@ import json
 
 PYTHON_DEFS = [
 	{
-		'python': 'cp310',  # tag::MIN_PYTHON
+		'python': 'cp311',  # tag::MIN_PYTHON
 		'macos_deployment_target': '10.12',
 	},
 	{
