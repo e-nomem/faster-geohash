@@ -28,7 +28,7 @@ pyo3 = "0.29"
 # Keep the `pyo3/abi3-{lower_bound}` feature here in sync with project.requires-python in the pyproject.toml
 abi3 = [
 	"pyo3/abi3",
-	"pyo3/abi3-py310",  # tag::MIN_PYTHON
+	"pyo3/abi3-py311",  # tag::MIN_PYTHON
 	"pyo3/abi3t",
 	"pyo3/abi3t-py315",
 ]
