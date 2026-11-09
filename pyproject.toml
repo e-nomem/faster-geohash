@@ -4,7 +4,7 @@
 [build-system]
 requires = [
     # Keep this in sync with dependency-groups.dev below
-    "maturin~=1.15",
+    "maturin~=1.16",
 ]
 build-backend = "maturin"
 
@@ -47,20 +47,20 @@ changelog = "https://github.com/e-nomem/faster-geohash/blob/main/CHANGELOG.md"
 [dependency-groups]
 dev = [
     # Keep this in sync with build-system.requires above
-    "maturin~=1.15",
+    "maturin~=1.16",
     {include-group = "lint"},
     {include-group = "test"},
 ]
 
 lint = [
-    "pre-commit>=4.6.2",
-    "ty==0.0.76",
+    "pre-commit>=4.7.0",
+    "ty==0.0.95",
     {include-group = "test"},
 ]
 
 test = [
     "packaging>=26.3",
-    "pytest>=9.1.1",
+    "pytest>=9.2.0",
 ]
 
 
